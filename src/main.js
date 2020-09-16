@@ -2,11 +2,11 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import axios from 'axios'
 
-axios.defaults.baseURL = ' https://www.easy-mock.com/mock/5f5fc891ed072c1818dd6ae2/zufang'
-Vue.prototype.$http = axios;
 
+//全局样式表
+import './assets/css/common.css'
+import './assets/font/iconfont.css'
 Vue.config.productionTip = false
 
 new Vue({
