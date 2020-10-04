@@ -1,39 +1,45 @@
 <template>
-  <div class="container">
-    <Banner :bannerUrl="homeData.banners_image_url"></Banner>
-    <div class="quick-search">
-      <ul>
-        <li>
-          <img src="../../assets/images/zhengtaoIcon.png"/>
-          <h3>整租</h3>
-        </li>
-        <li>
-          <img src="../../assets/images/danjianIcon.png"/>
-          <h3>合租</h3>
-        </li>
-        <li>
-          <img src="../../assets/images/gongyuIcon.png"/>
-          <h3>品牌公寓</h3>
-        </li>
-        <li>
-          <img src="../../assets/images/shiyouIcon.png"/>
-          <h3>找室友</h3>
-        </li>
-      </ul>
+  <!--  <scroller>-->
+  <div class="wrapper" ref="wrapper">
+    <div class="container">
+      <Banner :bannerUrl="homeData.banners_image_url"></Banner>
+      <div class="quick-search">
+        <ul>
+          <li>
+            <img src="../../assets/images/zhengtaoIcon.png"/>
+            <h3>整租</h3>
+          </li>
+          <li>
+            <img src="../../assets/images/danjianIcon.png"/>
+            <h3>合租</h3>
+          </li>
+          <li>
+            <img src="../../assets/images/gongyuIcon.png"/>
+            <h3>品牌公寓</h3>
+          </li>
+          <li>
+            <img src="../../assets/images/shiyouIcon.png"/>
+            <h3>找室友</h3>
+          </li>
+        </ul>
+      </div>
+      <!--页面闪烁 因为没数据之前不渲染li 数据来了之后导致重排-->
+      <div class="study">
+        <ul>
+          <li v-for="(item,index) in homeData.theme_list" :key="index">
+            <div class="wrapper">
+              <img :src="item.apt_img_url"/>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <GoodHouse></GoodHouse>
     </div>
-    <!--页面闪烁 因为没数据之前不渲染li 数据来了之后导致重排-->
-    <div class="study">
-      <ul>
-        <li v-for="(item,index) in homeData.theme_list" :key="index">
-          <div class="wrapper">
-            <img :src="item.apt_img_url"/>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <GoodHouse></GoodHouse>
     <DownApp></DownApp>
   </div>
+  <!--  </scroller>-->
+
+
 </template>
 
 <script>
@@ -41,14 +47,15 @@ import HomeModel from "@/models/Home"
 import DownApp from '@/components/DownApp'
 import Banner from '@/components/Banner'
 import GoodHouse from '@/components/GoodHouse'
-
+// import Scroller from '@/components/Scroll'
 const homeModel = new HomeModel()
 export default {
   name: "Home",
   components: {
     Banner,
     DownApp,
-    GoodHouse
+    GoodHouse,
+    // Scroller
   },
   data() {
     return {
@@ -56,13 +63,13 @@ export default {
     }
   },
   mounted() {
-    this.getData()
+    this.getData();
   },
   methods: {
     async getData() {
       const {data: res} = await homeModel.getHomeData('bj')
       if (res.code === 0) {
-        // console.log(res.result)
+        console.log(res.result)
         this.homeData = res.result
       }
     }
@@ -71,8 +78,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.container {
+.wrapper {
   height: 100%;
+}
+
+.container {
   background-color: #f0f0f0;
   
   .quick-search {

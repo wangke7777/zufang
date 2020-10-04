@@ -128,8 +128,10 @@ export default {
 .labels {
   display: flex;
   margin-top: .08rem;
+  flex-wrap: wrap;
   
   .label {
+    margin-top: .05rem;
     margin-right: .05rem;
     padding: 0 .02rem;
     font-size: .12rem;

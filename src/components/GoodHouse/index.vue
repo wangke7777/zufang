@@ -6,6 +6,14 @@
         <HouseCard :houseInfo="item"></HouseCard>
       </li>
     </ul>
+    <div class="pullup-tips">
+      <div v-show="!isPullUpLoad" class="before-trigger">
+        <span class="pullup-txt">上拉加载更多</span>
+      </div>
+      <div v-show="isPullUpLoad" class="after-trigger">
+        <span class="pullup-txt">加载中</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -14,28 +22,54 @@ import HomeModel from "@/models/Home";
 
 const homeModel = new HomeModel();
 import HouseCard from '@/components/HouseCard'
+import BScroll from '@better-scroll/core'
+import Pullup from '@better-scroll/pull-up'
 
+BScroll.use(Pullup)
 export default {
   name: "GoodHouse",
   data() {
     return {
       page: 1,
-      goodHouseList: []
+      goodHouseList: [],
+      isPullUpLoad: false
     }
   },
   components: {
     HouseCard
   },
-  created() {
-    this.getRecommendList()
+  mounted() {
+    this.getRecommendList();
+    this.init()
   },
   methods: {
     async getRecommendList() {
       const {data: res} = await homeModel.getRecommendData(this.page)
       if (res.code === 0) {
-        this.goodHouseList = res.result;
-        // console.log(res.result)
+        this.goodHouseList.push(...res.result);
+        console.log(res.result)
       }
+    },
+    init() {
+      this.bscroll = new BScroll(document.getElementsByClassName('wrapper')[0], {
+        scrollY: true,//垂直方向滚动
+        click: false,//默认会阻止浏览器的原生click事件，如果需要点击，这里要设为true
+        pullUpLoad: true,//上拉加载更多
+        pullDownRefresh: {
+          threshold: 50,//触发pullingDown事件的位置
+          stop: 0//下拉回弹后停留的位置
+        }
+      })
+      
+      this.bscroll.on('pullingUp', this.pullingUpHandler)
+    },
+    async pullingUpHandler() {
+      this.isPullUpLoad = true
+      this.page++;
+      this.bscroll.finishPullUp()
+      this.bscroll.refresh()
+      await this.getRecommendList()
+      this.isPullUpLoad = false
     }
   }
 }
