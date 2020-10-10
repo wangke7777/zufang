@@ -1,8 +1,10 @@
 const URL = {
   BASE_URL: process.env.NODE_ENV === 'production'
       ? '/'
-      : 'https://m.baletu.com'
+      : '/api'
 }
+const CITY = window.sessionStorage.getItem("city") || 'sh'
 export {
-  URL
+  URL,
+  CITY
 }
