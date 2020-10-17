@@ -35,27 +35,19 @@
       </div>
       <GoodHouse></GoodHouse>
     </div>
-    <DownApp></DownApp>
   </div>
-  <!--  </scroller>-->
-
-
 </template>
 
 <script>
 import HomeModel from "@/models/Home"
-import DownApp from '@/components/DownApp'
 import Banner from '@/components/Banner'
 import GoodHouse from '@/components/GoodHouse'
-// import Scroller from '@/components/Scroll'
 const homeModel = new HomeModel()
 export default {
   name: "Home",
   components: {
     Banner,
-    DownApp,
     GoodHouse,
-    // Scroller
   },
   data() {
     return {

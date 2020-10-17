@@ -6,14 +6,7 @@
         <HouseCard :houseInfo="item"></HouseCard>
       </li>
     </ul>
-    <!--    <div class="pullup-tips">-->
-    <!--      <div v-show="!isPullUpLoad" class="before-trigger">-->
-    <!--        <span class="pullup-txt">上拉加载更多</span>-->
-    <!--      </div>-->
-    <!--      <div v-show="isPullUpLoad" class="after-trigger">-->
-    <!--        <span class="pullup-txt">加载中</span>-->
-    <!--      </div>-->
-    <!--    </div>-->
+    <Loading v-show="showTips"></Loading>
   </div>
 </template>
 
@@ -22,33 +15,35 @@ import HomeModel from "@/models/Home";
 
 const homeModel = new HomeModel();
 import HouseCard from '@/components/HouseCard'
-// import BScroll from '@better-scroll/core'
-// import Pullup from '@better-scroll/pull-up'
+import _ from 'lodash'
+import Loading from "@/components/GoodHouse/Loading";
 
-// BScroll.use(Pullup)
 export default {
   name: "GoodHouse",
   data() {
     return {
       page: 1,
       goodHouseList: [],
-      isPullUpLoad: false
+      //提示上拉加载更多
+      showTips: true,
     }
   },
   components: {
-    HouseCard
+    HouseCard,
+    Loading
   },
   mounted() {
     this.getRecommendList();
     // this.init()
-    window.addEventListener("touchmove", this.onScroll)
+    window.addEventListener("scroll", _.throttle(this.onScroll, 1000))
   },
   methods: {
     async getRecommendList() {
       const {data: res} = await homeModel.getRecommendData(this.page)
       if (res.code === 0) {
         this.goodHouseList.push(...res.result);
-        this.page++;
+        //数据加载完成了
+        this.showTips = false;
         console.log(res.result)
       }
     },
@@ -64,31 +59,12 @@ export default {
       // console.log(Math.ceil(scrollTop + clientHeight) >= scrollHeight);
       if (scrollTop + clientHeight >= scrollHeight * 0.9) {
         console.log("滚动条到底了");
-        // this.page++;
+        //显示加载更多
+        this.showTips = true;
+        this.page++;
         this.getRecommendList()
       }
     }
-    // init() {
-    //   this.bscroll = new BScroll(document.getElementsByClassName('wrapper')[0], {
-    //     scrollY: true,//垂直方向滚动
-    //     click: false,//默认会阻止浏览器的原生click事件，如果需要点击，这里要设为true
-    //     pullUpLoad: true,//上拉加载更多
-    //     pullDownRefresh: {
-    //       threshold: 50,//触发pullingDown事件的位置
-    //       stop: 0//下拉回弹后停留的位置
-    //     }
-    //   })
-    //
-    //   this.bscroll.on('pullingUp', this.pullingUpHandler)
-    // },
-    // async pullingUpHandler() {
-    //   this.isPullUpLoad = true
-    //   this.page++;
-    //   this.bscroll.finishPullUp()
-    //   this.bscroll.refresh()
-    //   await this.getRecommendList()
-    //   this.isPullUpLoad = false
-    // }
   }
 }
 </script>

@@ -4,6 +4,7 @@ module.exports = {
     proxy: {
       '/api': {
         target: 'https://m.baletu.com/',
+        changeOrigin: true,
         pathRewrite: {'/api': '/'}
       }
     }
