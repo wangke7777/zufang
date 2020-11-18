@@ -6,7 +6,9 @@
         <HouseCard :houseInfo="item"></HouseCard>
       </li>
     </ul>
-    <Loading v-show="showTips"></Loading>
+    <Observe @intersection="getRecommendList" :isLoading="isLoading">
+      <p style="text-align: center">加载中。。。</p>
+    </Observe>
   </div>
 </template>
 
@@ -15,9 +17,8 @@ import HomeModel from "@/models/Home";
 
 const homeModel = new HomeModel();
 import HouseCard from '@/components/HouseCard'
-import _ from 'lodash'
 import Loading from "@/components/GoodHouse/Loading";
-
+import Observe from '@/components/Observe'
 export default {
   name: "GoodHouse",
   data() {
@@ -25,46 +26,27 @@ export default {
       page: 1,
       goodHouseList: [],
       //提示上拉加载更多
-      showTips: true,
+      isLoading: false
     }
   },
   components: {
     HouseCard,
-    Loading
-  },
-  mounted() {
-    this.getRecommendList();
-    // this.init()
-    window.addEventListener("scroll", _.throttle(this.onScroll, 1000))
+    Loading,
+    Observe
   },
   methods: {
     async getRecommendList() {
+      this.isLoading = true
       const {data: res} = await homeModel.getRecommendData(this.page)
       if (res.code === 0) {
         this.goodHouseList.push(...res.result);
+        this.page += 1
         //数据加载完成了
-        this.showTips = false;
+        // this.showTips = false;
         console.log(res.result)
+        this.isLoading = false
       }
     },
-    onScroll() {
-      console.log("监听滚动")
-      let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-      let clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
-      let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
-      console.log(scrollTop, "距离顶部");     // 动态变化
-      console.log(clientHeight, "可视区域高度");  // 667
-      console.log(scrollHeight, "页面总高度");  // 2180
-      // console.log(Math.ceil(scrollTop + clientHeight))
-      // console.log(Math.ceil(scrollTop + clientHeight) >= scrollHeight);
-      if (scrollTop + clientHeight >= scrollHeight * 0.9) {
-        console.log("滚动条到底了");
-        //显示加载更多
-        this.showTips = true;
-        this.page++;
-        this.getRecommendList()
-      }
-    }
   }
 }
 </script>
